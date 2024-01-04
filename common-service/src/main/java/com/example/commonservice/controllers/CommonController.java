@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommonController {
     @GetMapping("/common/status")
     public String getStatus() {
-        return "Common Route OK";
+        return "Common route OK";
     }
 }
