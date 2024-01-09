@@ -1,15 +1,15 @@
 server:
-  port: 0
+  port: 8001
 spring:
   application:
     name: common-service
   cloud:
     consul:
-      host: localhost
-      port: 8500
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
       discovery:
         prefer-ip-address: true
-        instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+        instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}}
 management:
   endpoints:
     web:

@@ -5,6 +5,9 @@ spring:
   application:
     name: gateway
   cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
     gateway:
       discovery:
         locator:
