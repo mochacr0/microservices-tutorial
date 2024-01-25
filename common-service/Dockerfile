@@ -7,9 +7,10 @@ COPY mvnw pom.xml ./
 RUN ./mvnw -Dmaven.test.skip=true dependency:resolve
 COPY src src
 COPY otel otel
-COPY opentelemetry-javaagent.jar ./
+#COPY opentelemetry-javaagent.jar ./
 
 FROM base as development
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.0.0/opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
 ENV JAVA_TOOL_OPTIONS=-javaagent:./opentelemetry-javaagent.jar
 ENV OTEL_JAVAAGENT_CONFIGURATION_FILE=/app/otel/otel-config.properties
 EXPOSE 8001

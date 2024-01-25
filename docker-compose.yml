@@ -32,7 +32,7 @@ services:
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318 # the default protocol is http/protobuf, which is corresponding to port 4318 (unclear docs, should be used with caution)
 #      - OTEL_TRACES_EXPORTER=otlp
 #      - OTEL_METRICS_EXPORTER=none
 #      - OTEL_LOGS_EXPORTER=none
