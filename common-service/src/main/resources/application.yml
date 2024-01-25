@@ -5,6 +5,7 @@ spring:
     name: common-service
   cloud:
     consul:
+      enabled: false
       host: ${CONSUL_HOST:localhost}
       port: ${CONSUL_PORT:8500}
       discovery:
@@ -14,6 +15,12 @@ spring:
     enabled: true
     import: "optional:consul:"
 management:
+  endpoint:
+    env:
+      show-values: ALWAYS
+    health:
+      show-details: ALWAYS
+#      show-components: ALWAYS
   endpoints:
     web:
       exposure:

@@ -6,8 +6,12 @@ COPY .mvn .mvn
 COPY mvnw pom.xml ./
 RUN ./mvnw -Dmaven.test.skip=true dependency:resolve
 COPY src src
+COPY otel otel
+COPY opentelemetry-javaagent.jar ./
 
 FROM base as development
+ENV JAVA_TOOL_OPTIONS=-javaagent:./opentelemetry-javaagent.jar
+ENV OTEL_JAVAAGENT_CONFIGURATION_FILE=/app/otel/otel-config.properties
 EXPOSE 8001
 CMD ["./mvnw", "spring-boot:run", "-Dmaven.test.skip=true"]
 

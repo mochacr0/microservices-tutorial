@@ -1,47 +1,62 @@
 #write docker-compose.yml for this microservices project
 version: '3.7'
 services:
-  consul:
-    image: consul:1.15
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-      - CONSUL_CLIENT_INTERFACE=eth0
-    command: agent -server -ui -bootstrap-expect=1
-    ports:
-        - "8500:8500"
-        - "8600:8600"
-        - "8600:8600/udp"
-  gatway:
-    build:
-      context: ./gateway
-      target: development
-    ports:
-      - "8000:8000"
-    environment:
-      - CONSUL_HOST=consul
-      - CONSUL_PORT=8500
-    depends_on:
-      - consul
+#  consul:
+#    image: consul:1.15
+#    environment:
+#      - CONSUL_BIND_INTERFACE=eth0
+#      - CONSUL_CLIENT_INTERFACE=eth0
+#    command: agent -server -ui -bootstrap-expect=1
+#    ports:
+#        - "8500:8500"
+#        - "8600:8600"
+#        - "8600:8600/udp"
+#  gatway:
+#    build:
+#      context: ./gateway
+#      target: development
+#    ports:
+#      - "8000:8000"
+#    environment:
+#      - CONSUL_HOST=consul
+#      - CONSUL_PORT=8500
+#    depends_on:
+#      - consul
   common-service:
+    container_name: common-service
     build:
       context: ./common-service
       target: development
     ports:
-      - "8001:8081"
+      - "8001:8001"
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+#      - OTEL_TRACES_EXPORTER=otlp
+#      - OTEL_METRICS_EXPORTER=none
+#      - OTEL_LOGS_EXPORTER=none
     depends_on:
-      - consul
-  user-service:
-    build:
-      context: ./user-service
-      target: development
+      otel-collector:
+        condition: service_started
+#      - consul
+#  user-service:
+#    build:
+#      context: ./user-service
+#      target: development
+#    ports:
+#        - "8002:8082"
+#    environment:
+#      - CONSUL_HOST=consul
+#      - CONSUL_PORT=8500
+#    depends_on:
+#      - consul
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib:0.92.0
+    volumes:
+      - ./otel-collector/config.yml:/etc/otelcol-contrib/config.yaml
     ports:
-        - "8002:8082"
-    environment:
-      - CONSUL_HOST=consul
-      - CONSUL_PORT=8500
-    depends_on:
-      - consul
+      - "4317:4317"
+      - "4318:4318"
 
