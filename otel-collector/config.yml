@@ -12,10 +12,13 @@ processors:
 exporters:
   debug:
     verbosity: detailed
-
+  otlphttp/tempo:
+    endpoint: http://tempo:3202
+    tls:
+      insecure: true
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, otlphttp/tempo]

@@ -1,27 +1,31 @@
 #write docker-compose.yml for this microservices project
 version: '3.7'
 services:
-#  consul:
-#    image: consul:1.15
-#    environment:
-#      - CONSUL_BIND_INTERFACE=eth0
-#      - CONSUL_CLIENT_INTERFACE=eth0
-#    command: agent -server -ui -bootstrap-expect=1
-#    ports:
-#        - "8500:8500"
-#        - "8600:8600"
-#        - "8600:8600/udp"
-#  gatway:
-#    build:
-#      context: ./gateway
-#      target: development
-#    ports:
-#      - "8000:8000"
-#    environment:
-#      - CONSUL_HOST=consul
-#      - CONSUL_PORT=8500
-#    depends_on:
-#      - consul
+  consul:
+    image: consul:1.15
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    command: agent -server -ui -bootstrap-expect=1
+    ports:
+        - "8500:8500"
+        - "8600:8600"
+        - "8600:8600/udp"
+  gatway:
+    build:
+      context: ./gateway
+      target: development
+    ports:
+      - "8000:8000"
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+      - OTEL_TRACES_EXPORTER
+      - OTEL_METRICS_EXPORTER
+      - OTEL_LOGS_EXPORTER
+    depends_on:
+      - consul
   common-service:
     container_name: common-service
     build:
@@ -32,25 +36,30 @@ services:
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318 # the default protocol is http/protobuf, which is corresponding to port 4318 (unclear docs, should be used with caution)
-#      - OTEL_TRACES_EXPORTER=otlp
-#      - OTEL_METRICS_EXPORTER=none
-#      - OTEL_LOGS_EXPORTER=none
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+      - OTEL_TRACES_EXPORTER
+      - OTEL_METRICS_EXPORTER
+      - OTEL_LOGS_EXPORTER
     depends_on:
       otel-collector:
         condition: service_started
-#      - consul
-#  user-service:
-#    build:
-#      context: ./user-service
-#      target: development
-#    ports:
-#        - "8002:8082"
-#    environment:
-#      - CONSUL_HOST=consul
-#      - CONSUL_PORT=8500
-#    depends_on:
-#      - consul
+      consul:
+        condition: service_started
+  user-service:
+    build:
+      context: ./user-service
+      target: development
+    ports:
+        - "8002:8082"
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+      - OTEL_TRACES_EXPORTER
+      - OTEL_METRICS_EXPORTER
+      - OTEL_LOGS_EXPORTER
+    depends_on:
+      - consul
   otel-collector:
     container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:0.92.0
@@ -59,4 +68,38 @@ services:
     ports:
       - "4317:4317"
       - "4318:4318"
-
+    depends_on:
+      tempo:
+        condition: service_started
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:latest
+    volumes:
+      - ./tempo/config.yml:/etc/tempo.yaml
+    command:
+        - "-config.file=/etc/tempo.yaml"
+    ports:
+#      - "14268:14268"  # jaeger ingest
+      - "3200:3200"   # tempo
+#      - "9095:9095" # tempo grpc
+      - "3201:3201"  # otlp grpc
+      - "3202:3202"  # otlp http
+#      - "9411:9411"   # zipkin
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-enterprise
+    volumes:
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    environment:
+        - GF_AUTH_ANONYMOUS_ENABLED=true
+        - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+        - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
+#  k6-tracing:
+#    image: ghcr.io/grafana/xk6-client-tracing:latest
+#    environment:
+#      - ENDPOINT=tempo:3201
+#    restart: always
+#    depends_on:
+#      - tempo

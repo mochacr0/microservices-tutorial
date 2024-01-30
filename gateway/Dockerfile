@@ -8,6 +8,8 @@ RUN ./mvnw -Dmaven.test.skip=true dependency:resolve
 COPY src src
 
 FROM base as development
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.0.0/opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
+ENV JAVA_TOOL_OPTIONS=-javaagent:./opentelemetry-javaagent.jar
 EXPOSE 8000
 CMD ["./mvnw", "spring-boot:run", "-Dmaven.test.skip=true"]
 
