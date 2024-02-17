@@ -80,11 +80,12 @@ services:
         - "-config.file=/etc/tempo.yaml"
     ports:
 #      - "14268:14268"  # jaeger ingest
-      - "3200:3200"   # tempo
 #      - "9095:9095" # tempo grpc
+#      - "9411:9411"   # zipkin
+      - "8889:8889" # prometheus
+      - "3200:3200"   # tempo
       - "3201:3201"  # otlp grpc
       - "3202:3202"  # otlp http
-#      - "9411:9411"   # zipkin
   grafana:
     container_name: grafana
     image: grafana/grafana-enterprise
@@ -103,3 +104,13 @@ services:
 #    restart: always
 #    depends_on:
 #      - tempo
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.49.1
+    volumes:
+      - ./prometheus/config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      otel-collector:
+        condition: service_started

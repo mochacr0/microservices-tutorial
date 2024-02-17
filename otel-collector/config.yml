@@ -16,9 +16,15 @@ exporters:
     endpoint: http://tempo:3202
     tls:
       insecure: true
+  prometheus:
+    endpoint: '0.0.0.0:8889'
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
       exporters: [debug, otlphttp/tempo]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
