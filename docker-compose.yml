@@ -27,7 +27,6 @@ services:
     depends_on:
       - consul
   common-service:
-    container_name: common-service
     build:
       context: ./common-service
       target: development
@@ -61,7 +60,6 @@ services:
     depends_on:
       - consul
   otel-collector:
-    container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:0.92.0
     volumes:
       - ./otel-collector/config.yml:/etc/otelcol-contrib/config.yaml
@@ -72,7 +70,6 @@ services:
       tempo:
         condition: service_started
   tempo:
-    container_name: tempo
     image: grafana/tempo:latest
     volumes:
       - ./tempo/config.yml:/etc/tempo.yaml
@@ -87,7 +84,6 @@ services:
       - "3201:3201"  # otlp grpc
       - "3202:3202"  # otlp http
   grafana:
-    container_name: grafana
     image: grafana/grafana-enterprise
     volumes:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
@@ -105,7 +101,6 @@ services:
 #    depends_on:
 #      - tempo
   prometheus:
-    container_name: prometheus
     image: prom/prometheus:v2.49.1
     volumes:
       - ./prometheus/config.yml:/etc/prometheus/prometheus.yml
