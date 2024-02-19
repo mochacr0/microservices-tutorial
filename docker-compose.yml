@@ -93,15 +93,12 @@ services:
         - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
-#  k6-tracing:
-#    image: ghcr.io/grafana/xk6-client-tracing:latest
-#    environment:
-#      - ENDPOINT=tempo:3201
-#    restart: always
-#    depends_on:
-#      - tempo
   prometheus:
     image: prom/prometheus:v2.49.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+#      - --enable-feature=exemplar-storage
+      - --web.enable-remote-write-receiver
     volumes:
       - ./prometheus/config.yml:/etc/prometheus/prometheus.yml
     ports:
@@ -109,3 +106,10 @@ services:
     depends_on:
       otel-collector:
         condition: service_started
+#  k6-tracing:
+#    image: ghcr.io/grafana/xk6-client-tracing:latest
+#    environment:
+#      - ENDPOINT=tempo:3201
+#    restart: always
+#    depends_on:
+#      - tempo

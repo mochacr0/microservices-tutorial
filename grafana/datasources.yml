@@ -1,15 +1,5 @@
 apiVersion: 1
 datasources:
-  - name: Tempo
-    apiVersion: 1
-    version: 1
-    type: tempo
-    uid: tempo
-    url: http://tempo:3200
-    access: proxy
-    basicAuth: false
-    isDefault: true
-    editable: false
   - name: Prometheus
     apiVersion: 1
     version: 1
@@ -20,3 +10,19 @@ datasources:
     basicAuth: false
     isDefault: false
     editable: false
+    jsonData:
+      httpMethod: GET
+  - name: Tempo
+    apiVersion: 1
+    version: 1
+    type: tempo
+    uid: tempo
+    url: http://tempo:3200
+    access: proxy
+    basicAuth: false
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMethod: GET
+      serviceMap:
+        datasourceUid: prometheus
