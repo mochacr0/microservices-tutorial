@@ -62,7 +62,7 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.92.0
     volumes:
-      - ./otel-collector/config.yml:/etc/otelcol-contrib/config.yaml
+      - ./docker/otel-collector/config.yml:/etc/otelcol-contrib/config.yaml
     ports:
       - "4317:4317"
       - "4318:4318"
@@ -72,7 +72,7 @@ services:
   tempo:
     image: grafana/tempo:latest
     volumes:
-      - ./tempo/config.yml:/etc/tempo.yaml
+      - ./docker/tempo/config.yml:/etc/tempo.yaml
     command:
         - "-config.file=/etc/tempo.yaml"
     ports:
@@ -86,7 +86,7 @@ services:
   grafana:
     image: grafana/grafana-enterprise
     volumes:
-      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./docker/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
     environment:
         - GF_AUTH_ANONYMOUS_ENABLED=true
         - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -100,7 +100,7 @@ services:
 #      - --enable-feature=exemplar-storage
       - --web.enable-remote-write-receiver
     volumes:
-      - ./prometheus/config.yml:/etc/prometheus/prometheus.yml
+      - ./docker/prometheus/config.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     depends_on:
