@@ -12,6 +12,7 @@ This project is a tutorial on building microservices using Java, Spring Boot, an
 
 ## Architecture
 
+![Architecture](./docs/images/architecture.svg)
 
 ## Installation
 To install and run the project, follow these steps:
@@ -24,6 +25,7 @@ git clone https://github.com/mochacr0/microservices-tutorial.git
 docker compose up
 ```
 3. Once the Docker containers are up and running, you can access the services using the following URLs:
+   
    - Consul: http://localhost:8500
    - Gateway: http://localhost:8080
    - Common Service: http://localhost:8080/common
