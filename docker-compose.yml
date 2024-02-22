@@ -106,10 +106,10 @@ services:
     depends_on:
       otel-collector:
         condition: service_started
-#  k6-tracing:
-#    image: ghcr.io/grafana/xk6-client-tracing:latest
-#    environment:
-#      - ENDPOINT=tempo:3201
-#    restart: always
-#    depends_on:
-#      - tempo
+  k6-tracing:
+    image: ghcr.io/grafana/xk6-client-tracing:latest
+    environment:
+      - ENDPOINT=tempo:3201
+    restart: always
+    depends_on:
+      - tempo
