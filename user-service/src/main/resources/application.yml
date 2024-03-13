@@ -5,15 +5,35 @@ spring:
     name: user-service
   cloud:
     consul:
+      enabled: false
       host: ${CONSUL_HOST:localhost}
       port: ${CONSUL_PORT:8500}
       discovery:
         prefer-ip-address: true
         instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+  jpa:
+    properties:
+      hibernate:
+        dialect: "org.hibernate.dialect.PostgreSQLDialect"
+        format_sql: true
+    hibernate:
+      ddl-auto: "update"
+    show-sql: true
+  datasource:
+    password: "postgres"
+    username: "postgres"
+    url: "${DATASOURCE_URL:jdbc:postgresql://localhost:5432/microservices-user}"
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+logging:
+  level:
+    org:
+      springframework:
+        web: "DEBUG"
+        security: "TRACE"
+
 
 
