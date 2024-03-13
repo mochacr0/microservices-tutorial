@@ -1,6 +1,8 @@
 package com.example.userservice.services;
 
+import com.example.userservice.common.utils.DaoUtils;
 import com.example.userservice.data.CreateUserRequest;
+import com.example.userservice.data.PageParameter;
 import com.example.userservice.data.UpdateUserRequest;
 import com.example.userservice.data.UserMapper;
 import com.example.userservice.exceptions.InvalidDataException;
@@ -10,6 +12,8 @@ import com.example.userservice.repositories.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -60,6 +64,21 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ItemNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
         user.setAge(request.getAge());
         return userRepository.save(user);
+    }
+
+    @Override
+    public Page<UserEntity> findUsers(PageParameter pageParameter) {
+        log.info("UserService findUsers");
+        if (pageParameter == null) {
+            throw new InvalidDataException("Invalid pageParameter");
+        }
+        if (pageParameter.getPageSize() < 1) {
+            throw new InvalidDataException("Invalid pageSize");
+        }
+        if (pageParameter.getPageNumber() < 0) {
+            throw new InvalidDataException("Invalid pageNumber");
+        }
+        return userRepository.findAll(DaoUtils.toPageable(pageParameter));
     }
 
 

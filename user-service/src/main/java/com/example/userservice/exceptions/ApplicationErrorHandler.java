@@ -24,6 +24,7 @@ public class ApplicationErrorHandler extends ResponseEntityExceptionHandler {
 
     static {
         exceptionToStatusMap.put(InvalidDataException.class, HttpStatus.BAD_REQUEST);
+        exceptionToStatusMap.put(IllegalArgumentException.class, HttpStatus.BAD_REQUEST);
         exceptionToStatusMap.put(ItemNotFoundException.class, HttpStatus.NOT_FOUND);
     }
 
